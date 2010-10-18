@@ -384,16 +384,19 @@ public class ConstraintNetwork<E> {
 				
 						// if it already contains them then we do not need to add them again (they will be processed anyway)
 						if ((stackEntries.get(k).get(j)==false)) {  //only add if not already there
-							Pair<Integer,Integer> updatePair =new Pair<Integer,Integer>(k,j); 
-							batchStack.add(updatePair);	
 							// Add stack entry
 							stackEntries.get(k).set(j,true);
-							// Put inverse also on the stack
-							stackEntries.get(j).set(k, true);
+							Pair<Integer,Integer> updatePair =new Pair<Integer,Integer>(k,j); 
+							batchStack.add(updatePair);
+						}
+						if ((stackEntries.get(j).get(k)==false)) {  //only add if not already there
+						// Put inverse also on the stack
+						stackEntries.get(j).set(k, true);
+						Pair<Integer,Integer> updatePairInverse =new Pair<Integer,Integer>(j,k); 
+						batchStack.add(updatePairInverse);							
 						}
 						// update constraint network
-						this.constraintnetwork.get(k).set(j, ckj);
-													
+						this.constraintnetwork.get(k).set(j, ckj);			
 						// we also update directly the inverse constraint between the nodes: ejk
 						short iCon = this.inverseConstraintsShort(ckj);
 						this.constraintnetwork.get(j).set(k, iCon);						
@@ -417,12 +420,16 @@ public class ConstraintNetwork<E> {
 					if ((cik!=ciktemp && ((short)ciktemp&cik)==cik)) {
 				
 						if ((stackEntries.get(i).get(k)==false)) {  //only add if not already there
-							Pair<Integer,Integer> updatePair =new Pair<Integer,Integer>(i,k); 
-							batchStack.add(updatePair);	
 							// Add stack entry
 							stackEntries.get(i).set(k,true);
+							Pair<Integer,Integer> updatePair =new Pair<Integer,Integer>(i,k); 
+							batchStack.add(updatePair);	
+						}
+						if ((stackEntries.get(k).get(i)==false)) {  //only add if not already there
 							// Put inverse also on the stack
 							stackEntries.get(k).set(i, true);
+							Pair<Integer,Integer> updatePairInverse =new Pair<Integer,Integer>(k,i); 
+							batchStack.add(updatePairInverse);	
 						}
 						// update constraint network
 						this.constraintnetwork.get(i).set(k, cik);
