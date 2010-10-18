@@ -348,7 +348,10 @@ public class ConstraintNetwork<E> {
 			iterations++;
 			Pair<Integer,Integer> currentEdge = batchStack.get(0);
 			batchStack.remove(0);
-			// 
+			// Remove stack entry
+			stackEntries.get(currentEdge.getP1()).set(currentEdge.getP2(),false);
+			
+			
 			int i = currentEdge.getP1().intValue();
 			int j = currentEdge.getP2().intValue();
 			// Browse through all nodes
