@@ -121,7 +121,7 @@ public class ConstraintNetwork<E> {
 	};
 	
 	/*
-	 * Constructor creates an empty constaint network
+	 * Constructor creates an empty constraint network
 	 * 
 	 * 
 	 */
@@ -564,7 +564,7 @@ public class ConstraintNetwork<E> {
 	 * 
 	 * @param set of constraints c
 	 * 
-	 * @return list of names of the constaints given in c
+	 * @return list of names of the constraints given in c
 	 * 
 	 * 
 	 */
