@@ -240,6 +240,7 @@ public class ConstraintNetwork<E> {
 		return true;
 	}
 	
+	
 	/*
 	 * Rebuilds the constraint network (only for the case that constraints have been removed)
 	 * 
@@ -263,7 +264,8 @@ public class ConstraintNetwork<E> {
 	
 	/*
 	 * Implements allen's path consistency algorithm. Please note that the algorithm may not be able to detect all inconsistent networks
-	 * (see references above).
+	 * (see references above). Please note that another output of this algorithm is an updated constraint network (@see #getConstraintNetwork), with
+	 * all possible constraints between nodes given the defined constraints
 	 * 
 	 * @return true, network is consistent and false, network is inconsistent
 	 * 
