@@ -120,11 +120,26 @@ public class ConstraintNetwork<E> {
 			
 	};
 	
+	/*
+	 * Constructor creates an empty constaint network
+	 * 
+	 * 
+	 */
+	
 	public ConstraintNetwork() {
 		this.modeledNodes=new ArrayList<Node<E>>();
 		this.modeledConstraints=new ArrayList<Constraint<E>>();
 		this.constraintnetwork=new ArrayList<ArrayList<Short>>();
 	}
+	
+	/*
+	 * Adds a node to the list of modeled nodes constraint network
+	 * 
+	 * @param nodeAdd Node to be added to the list of modeled nodes and the constraint network
+	 * 
+	 * @return true if node has been successfully added, false, if not
+	 * 
+	 */
 	
 	public boolean addNode(Node<E> nodeAdd)  {
 		// add to the list of modeled nodes
@@ -136,6 +151,15 @@ public class ConstraintNetwork<E> {
 		this.addNodeToConstraintNetwork(nodeAdd);
 		return true;
 	}
+	
+	
+	/*
+	 * Adds a node to the constraint network. By default all interval relationships are possible from this node to the others and the other
+	 * way around. This has to be verified/corrected by the path consistency algorithm (@see #pathConsistency)
+	 * 
+	 * @param nodeAdd Node to be added to the constraint network
+	 * 
+	 */
 	
 	private void addNodeToConstraintNetwork(Node<E> nodeAdd) {
 		// add to constraint network
@@ -161,6 +185,15 @@ public class ConstraintNetwork<E> {
 
 	}
 	
+	/*
+	 * Removes a node from the list of modeled nodes and the constraint network
+	 * 
+	 * @param reovedNode Node to be removed from the list of modeled nodes and the constraint network
+	 * 
+	 * @return true if the Node has been successfully removed, false if not
+	 * 
+	 */
+	
 	public boolean removeNode(Node<E> removedNode) {
 		if (this.modeledNodes.contains(removedNode)) {
 				this.modeledNodes.remove(removedNode);
@@ -180,7 +213,11 @@ public class ConstraintNetwork<E> {
 	}
 	
 	/*
+	 * This method adds a constraint to the list of modeled constraints and the constraint network
 	 * 
+	 *  @param constraintAdd Constraint to be added to the list of modeled constraints and the constraint network
+	 * 
+	 *  @return true if constraint has been added, false, if not
 	 * 
 	 */
 	
@@ -210,6 +247,13 @@ public class ConstraintNetwork<E> {
 		return true;
 	}
 	
+	/*
+	 * Adds a constraint to the constraint network
+	 * 
+	 * @param constraintAdd constraint to be added to the constraint network
+	 * 
+	 */
+	
 	private void addConstraintToConstraintNetwork(Constraint<E> constraintAdd) {
 		// add in constraint network
 		
@@ -226,10 +270,15 @@ public class ConstraintNetwork<E> {
 	
 	/*
 	 * Remove a constraint from the network. Please note that this function can be costly, because it requires a full
-	 * execution of the path consistency algorithm (O(N^3)).
+	 * execution of the path consistency algorithm (O(N^3)). It rebuilds the constraint network afterwards (to gain correct results
+	 * when using the path consistency method)
 	 * 
+	 * @constraintRemove the constraint to be removed 
+	 * 
+	 * @return true, constraint has been successfully removed, false if not
 	 * 
 	 */
+	
 	public boolean removeConstraint(Constraint<E> constraintRemove) {
 		if (this.modeledConstraints.contains((constraintRemove))) {
 			this.modeledConstraints.remove(constraintRemove);
@@ -245,6 +294,7 @@ public class ConstraintNetwork<E> {
 	 * Rebuilds the constraint network (only for the case that constraints have been removed)
 	 * 
 	 */
+	
 	private void rebuild() {
 		constraintnetwork.clear();
 		// add all nodes
@@ -272,7 +322,7 @@ public class ConstraintNetwork<E> {
 	 */
 	
 	public boolean pathConsistency() {
-		if (this.modeledConstraints.size()==0) return true; // only one dependency is no problem		
+		if (this.modeledConstraints.size()==0) return true; // no constraint => nothing todo		
 		ArrayList<Pair<Integer,Integer>> batchStack = new ArrayList<Pair<Integer,Integer>>();
 		// cache to check if an entry is already on the stack => faster then looking up the whole stack each time
 		ArrayList<ArrayList<Boolean>> stackEntries = new ArrayList<ArrayList<Boolean>>();
@@ -284,13 +334,13 @@ public class ConstraintNetwork<E> {
 			}
 		}
 		// end Caching
-		// add dependency to model
+		// find at least one constraint to process
 		Constraint<E> startConstraint = this.modeledConstraints.get(0);
-		// Add new Dependency on the batchStack
+		// Add constraint to batchStack
 		batchStack.add(new Pair<Integer,Integer>(startConstraint.getSourceNode().getAllenId(),startConstraint.getDestinationNode().getAllenId()));
 		// Add stack entry
 		stackEntries.get(startConstraint.getSourceNode().getAllenId()).set(startConstraint.getDestinationNode().getAllenId(),true);
-		// Inverse is already also on the stack
+		// Put inverse also on the stack
 		stackEntries.get(startConstraint.getDestinationNode().getAllenId()).set(startConstraint.getSourceNode().getAllenId(), true);
 		//
 		int iterations=0;
@@ -301,7 +351,7 @@ public class ConstraintNetwork<E> {
 			// 
 			int i = currentEdge.getP1().intValue();
 			int j = currentEdge.getP2().intValue();
-			// Browse through all Nodes
+			// Browse through all nodes
 			for (int k=0;k<this.constraintnetwork.size();k++) {
 				// Preliminaries get the constraints 
 				short ckj = this.constraintnetwork.get(k).get(j);
@@ -313,12 +363,10 @@ public class ConstraintNetwork<E> {
 				// get the constraints for k -> j
 				// lookup in the transivity matrix (k,i) and (i,j)
 				short ckiij = collectConstraintsShort(cki, cij);
-				//ckj = intersectConstraintsShort(ckj, ckiij);
-				short ckjtemp2=ckj;
+				// the following line intersects the set of contraints in ckj and ckiij
 				ckj = (short) (ckj & ckiij);
 				// if no valid constraint is possible this means the network is inconsistent 
-          	// remove unused bits
-				if (ckj==0) {
+    			if (ckj==0) {
 					return false;
 				}
 				// Please note a change of allens original algorithm here:
@@ -331,29 +379,28 @@ public class ConstraintNetwork<E> {
 				short ckjtemp = this.constraintnetwork.get(k).get(j);
 				if ((ckj!=ckjtemp && ((short)ckjtemp&ckj)==ckj)) {
 				
-						// if it already contains them then we do not need to add them
-						//if (containsPair(batchStack,updatePair)==false) 
+						// if it already contains them then we do not need to add them again (they will be processed anyway)
 						if ((stackEntries.get(k).get(j)==false)) {  //only add if not already there
 							Pair<Integer,Integer> updatePair =new Pair<Integer,Integer>(k,j); 
 							batchStack.add(updatePair);	
 							// Add stack entry
 							stackEntries.get(k).set(j,true);
-							// Inverse is already also on the stack
+							// Put inverse also on the stack
 							stackEntries.get(j).set(k, true);
 						}
-						
+						// update constraint network
 						this.constraintnetwork.get(k).set(j, ckj);
 													
-					// we also update directly the inverse dependency: ejk
+						// we also update directly the inverse constraint between the nodes: ejk
 						short iCon = this.inverseConstraintsShort(ckj);
 						this.constraintnetwork.get(j).set(k, iCon);						
 					}
 				////////////////////////////////////////Second part
 				// get the constraints for i -> k
 				short cijjk = collectConstraintsShort(cij,cjk);
+				// the following line is equivalent to an intersection of the set of constraints defined in cik and cijjk
 				cik = (short) (cik & cijjk);
 				// if no valid constraint is possible this means the network is inconsistent
-				
 				if (cik==0) {
 
 					return false;
@@ -371,12 +418,12 @@ public class ConstraintNetwork<E> {
 							batchStack.add(updatePair);	
 							// Add stack entry
 							stackEntries.get(i).set(k,true);
-							// Inverse is already also on the stack
+							// Put inverse also on the stack
 							stackEntries.get(k).set(i, true);
 						}
-			
+						// update constraint network
 						this.constraintnetwork.get(i).set(k, cik);
-						// Set inverse
+						// And also the inverse
 						Short iCon = this.inverseConstraintsShort(cik);
 						this.constraintnetwork.get(k).set(i, iCon);
 					
@@ -402,7 +449,6 @@ public class ConstraintNetwork<E> {
 	 */
 	
 	public Short collectConstraintsShort(Short c1, Short c2) {
-		// todo
 		short result=0;
 		// for each entry (max 13)
 		for (int i=0;i<14;i++) {
@@ -417,7 +463,8 @@ public class ConstraintNetwork<E> {
 				if ((short) (c2 & c2select)==c2select) { // c2 has a constraint at this position
 					// look up in transitivitymatrix
 					short constraints = transitivematrixshort[i][j];
-					result = unionConstraintsShort(result,constraints);
+					// the following line means a union of the constraint set in result and constraints
+					result = (short) (result |constraints);
 					if (((short)result&bin_all)==bin_all) {
 						return result; // all constraints are already in there we do not need further unions
 					}
@@ -471,33 +518,46 @@ public class ConstraintNetwork<E> {
 	}
 	
 	/*
+	 * This method returns the current constraint network (useful after it has been processed by @see #pathConsistency)
 	 * 
-	 * This method unions two shorts (it performs a binary or)
-	 * @param c first short value to union with
-	 * @param t second short value
-	 * 
-	 * @return union of the two shorts (binary or)
-	 * 
+	 * @return the current constraint network
 	 * 
 	 */
-	
-	public Short unionConstraintsShort(Short c, Short t) {
-		// or if either one bit is 1
-		short result = (short) (c.shortValue() | t.shortValue());
-		return new Short(result);
-	}
-	
-	public ArrayList<Constraint<E>> getDefinedConstraintList() {
-		return this.modeledConstraints;
-	}
-	
-	public ArrayList<Node<E>> getDefinedNodeList() {
-		return this.modeledNodes;
-	}
 	
 	public ArrayList<ArrayList<Short>> getConstraintNetwork () {
 		return this.constraintnetwork;
 	}
+	
+	/*
+	 * This method returns the list of modeled constraints
+	 * 
+	 * @return list of modeled constraints
+	 * 
+	 */
+	public ArrayList<Constraint<E>> getModeledConstraints() {
+		return this.modeledConstraints;
+	}
+	
+	/*
+	 * This method returns the lsit of modeled nodes
+	 * 
+	 *  @return list of modeled nodes
+	 * 
+	 */
+	
+	public ArrayList<Node<E>> getModeledNodes() {
+		return this.modeledNodes;
+	}
+	
+	/*
+	 * Returns a list of names of the constraints given in the set of constraints
+	 * 
+	 * @param set of constraints c
+	 * 
+	 * @return list of names of the constaints given in c
+	 * 
+	 * 
+	 */
 	
 	public ArrayList<String> getConstraintStringFromConstraintShort(short c) {
 		ArrayList<String> result = new ArrayList<String>();
