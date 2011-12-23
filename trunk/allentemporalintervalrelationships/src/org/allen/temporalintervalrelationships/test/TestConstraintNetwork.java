@@ -50,9 +50,10 @@ public class TestConstraintNetwork {
 	}
 	
 	/*
-	 * Test a constraint network that would be wrongly recognized inconsistent because of a mistake in Allen's original paper
-	 * 
-	 * 
+	 * Test Example of Consistent network
+	 * A STARTS B
+	 * A CONTAINS C
+	 *
 	 */
 	
 	@Test
