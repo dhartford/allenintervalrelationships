@@ -81,18 +81,17 @@ public class ConstraintNetwork<E> {
 		{bin_before, bin_after,bin_during,bin_all,bin_before | bin_overlaps | bin_meets | bin_during | bin_starts, bin_after | bin_overlappedby | bin_metby | bin_during | bin_finishes, bin_before, bin_after, bin_during, bin_after | bin_overlappedby | bin_metby | bin_during | bin_finishes, bin_during, bin_before | bin_overlaps | bin_meets | bin_during | bin_starts, bin_during},
 //		{"<",">","d", "< > d di o oi m mi s si f fi e", "< o m d s", "> oi mi d f", "<", ">", "d", "> oi mi d f", "d", "< o m d s","d"},
 		// fourth row contains
-		// note: there seems to be a mistake in allens original table
+		// note: there seems to be a confusion in allens original table
 		// bin_contains -> bin_during is in the original: o, oi, dur, con, e
-		// it should be all relationships (ni)
-		// this makes also sense if we look at the original table bin_during-> bin_contains: ni
-		{bin_before | bin_overlaps | bin_meets | bin_contains | bin_finishedby, bin_after | bin_overlappedby | bin_contains | bin_metby | bin_startedby, bin_all, bin_contains, bin_overlaps | bin_contains | bin_finishedby,bin_overlappedby | bin_contains | bin_startedby,bin_overlaps | bin_contains | bin_finishedby,bin_overlappedby | bin_contains | bin_startedby,bin_contains | bin_finishedby | bin_overlaps, bin_contains, bin_contains | bin_startedby | bin_overlappedby, bin_contains,bin_contains},
-//		{"< o m di fi","> oi mi di si","o oi d di e","di","o di fi","oi di si","o di fi","oi di si","di fi o","di","di si oi","di","di"}
+		// it should be: o oi dur con e s si f fi
+		{bin_before | bin_overlaps | bin_meets | bin_contains | bin_finishedby, bin_after | bin_overlappedby | bin_contains | bin_metby | bin_startedby, bin_overlaps | bin_overlappedby | bin_during | bin_contains | bin_equals | bin_starts| bin_startedby | bin_finishes | bin_finishedby, bin_contains, bin_overlaps | bin_contains | bin_finishedby,bin_overlappedby | bin_contains | bin_startedby,bin_overlaps | bin_contains | bin_finishedby,bin_overlappedby | bin_contains | bin_startedby,bin_contains | bin_finishedby | bin_overlaps, bin_contains, bin_contains | bin_startedby | bin_overlappedby, bin_contains,bin_contains},
+//		{"< o m di fi","> oi mi di si","o oi dur con e s si f fi","di","o di fi","oi di si","o di fi","oi di si","di fi o","di","di si oi","di","di"}
 		// fifth row overlaps 
-		// note: there seems to be a mistake in allens original table
+		// note: there seems to be a confusion in allens original table
 		// bin_overlaps -> bin_overlappedby is in the original: o oi dur con e
 		// it should be: o oi dur con e s si f fi
 		{bin_before,bin_after | bin_overlappedby | bin_contains | bin_metby | bin_startedby,bin_overlaps | bin_during | bin_starts, bin_before | bin_overlaps | bin_meets | bin_contains | bin_finishedby, bin_before | bin_overlaps | bin_meets, bin_overlaps | bin_overlappedby | bin_during | bin_contains | bin_equals | bin_starts| bin_startedby | bin_finishes | bin_finishedby, bin_before, bin_overlappedby | bin_contains | bin_startedby, bin_overlaps, bin_contains | bin_finishedby | bin_overlaps, bin_during | bin_starts | bin_overlaps, bin_before | bin_overlaps | bin_meets, bin_overlaps},
-//		{"<","> oi di mi si","o d s","< o m di fi","< o m","o oi d di e","<","oi di si","o","di fi o","d s o","< o m","o"},
+//		{"<","> oi di mi si","o d s","< o m di fi","< o m", "o oi dur con e s si f fi","<","oi di si","o","di fi o","d s o","< o m","o"},
 		// six row overlapped by
 		// note: there seems to be a mistake in allens original table
 		// bin_overlappedby -> bin_overlaps is in the original: o oi dur con e
