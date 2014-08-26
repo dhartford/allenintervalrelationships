@@ -246,6 +246,8 @@ public class ConstraintNetwork<E> {
 			return false;
 		}
 		this.addConstraintToConstraintNetwork(constraintAdd);
+		// execute path consistency to have a correct constraint network
+		this.pathConsistency();
 		return true;
 	}
 	
@@ -337,7 +339,7 @@ public class ConstraintNetwork<E> {
 		}
 		// end Caching
 		// find at least one constraint to process
-		Constraint<E> startConstraint = this.modeledConstraints.get(0);
+		Constraint<E> startConstraint =  this.modeledConstraints.get(modeledConstraints.size() - 1);
 		// Add constraint to batchStack
 		batchStack.add(new Pair<Integer,Integer>(startConstraint.getSourceNode().getAllenId(),startConstraint.getDestinationNode().getAllenId()));
 		// Add stack entry
