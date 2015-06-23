@@ -1,0 +1,1 @@
+I hope I will have soon time to explain more Allen's temporal interval relationships and the path consistency algorithm.
